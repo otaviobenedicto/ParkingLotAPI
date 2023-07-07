@@ -1,0 +1,36 @@
+GET http://localhost:9000/api/v1/
+
+###
+GET http://localhost:9000/api/v1/users
+
+###
+GET http://localhost:9000/api/v1/parking_spaces
+
+###
+POST http://localhost:9000/api/v1/parking_lots/init
+Content-Type: application/json
+
+{
+    "name":"Rob ParK_Lot",
+    "capacity":25,
+    "reserved_percentage":1
+}
+
+###
+POST http://localhost:9000/api/v1/users/book
+Content-Type: application/json
+
+{
+    "name":"Robs",
+    "registration_no":12,
+    "booking_time":10
+}
+
+###
+POST http://localhost:9000/api/v1/users/park
+Content-Type: application/json
+
+{
+    "name":"Rob ParK_Lot",
+    "registration_no":15
+}

@@ -11,21 +11,31 @@ class ParkingLotsController {
 
   // API for create default Parking Lot System
   static async initParkingLot(req, res, next) {
-    const parkingLotSystemName = req.body['name'] || 'default';
+    const parkingLotSystemName = req.body['name'];
+
+    if (parkingLotSystemName) {
+      return 'Name is required';
+    }
+
     const parkingLotSystemCapacity = Number(req.body['capacity'] || 120);
-    const parkingLotSystemReservedPercentage = Number(req.body['reserved_percentage'] || 20);
+    
+    const parkingLotSystemReservedPercentage = Number(
+      req.body['reserved_percentage'] || 20
+    );
 
     const parkingSpace = {
       parking_lot_name: parkingLotSystemName,
-    }
+    };
 
-    const reservedSpaces = Math.floor(parkingLotSystemCapacity * parkingLotSystemReservedPercentage / 100);
+    const reservedSpaces = Math.floor(
+      (parkingLotSystemCapacity * parkingLotSystemReservedPercentage) / 100
+    );
 
     try {
-      for(let i=0; i<parkingLotSystemCapacity; i++) {
-        parkingSpace['spot_no'] = i+1;
+      for (let i = 0; i < parkingLotSystemCapacity; i++) {
+        parkingSpace['spot_no'] = i + 1;
 
-        if(i < reservedSpaces) {
+        if (i < reservedSpaces) {
           // Creating reserved
           parkingSpace['is_reserved'] = true;
         } else {
@@ -45,7 +55,6 @@ class ParkingLotsController {
     };
     res.status(200).json(response);
   }
-
 }
 
 module.exports = {

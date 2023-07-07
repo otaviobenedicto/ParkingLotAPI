@@ -12,13 +12,16 @@ class ParkingSpacesController {
   // Generic Search API
   static async search(req, res, next) {
     const searchCreteria = {};
-    if(req.query.filter_by && req.query.filter_by == 'occupied') {
-      searchCreteria['registration_no'] = { '$exists': true, '$ne': null };
+    if (req.query.filter_by && req.query.filter_by == 'occupied') {
+      searchCreteria['registration_no'] = { $exists: true, $ne: null };
     }
 
     const response = {
-      data: await parkingSpaceService.search(searchCreteria)
-                                     .select('-_id parking_lot_name spot_no registration_no is_reserved created_at updated_at'),
+      data: await parkingSpaceService
+        .search(searchCreteria)
+        .select(
+          '-_id parking_lot_name spot_no registration_no is_reserved created_at updated_at'
+        ),
     };
     res.json(response);
   }

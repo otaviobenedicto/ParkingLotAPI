@@ -14,24 +14,29 @@ class UsersController {
     const searchCreteria = {};
 
     const response = {
-      data: await userService.search(searchCreteria)
-                             .select('-_id name can_use_reserved_space created_at updated_at'),
+      data: await userService
+        .search(searchCreteria)
+        .select('-_id name can_use_reserved_space created_at updated_at'),
     };
     res.json(response);
   }
 
   // Booking API
-  static async book(req, res, next) {
-    logger.info(req.body, 'Booking Request')
+  static async book(req, res) {
+    logger.info(req.body, 'Booking Request');
 
-    const name = req.body.name || 'Vijay';
+    const name = req.body.name;
     const vehicleRegistrationNo = req.body.registration_no;
-    const bookingTime = req.body.booking_time; // This can be used for testing the functionalities
+    const bookingTime = req.body.booking_time;
 
     // TODO: reserved
 
     try {
-      await userService.bookVehicle({ name, vehicleRegistrationNo, bookingTime });
+      await userService.bookVehicle({
+        name,
+        vehicleRegistrationNo,
+        bookingTime,
+      });
 
       const response = {
         data: 'Parking Space booked successfully',
@@ -43,19 +48,21 @@ class UsersController {
       };
       res.status(400).json(response);
     }
-
   }
 
   // Park API
   static async park(req, res, next) {
-    logger.info(req.body, 'Park Request')
+    logger.info(req.body, 'Park Request');
 
-    const name = req.body.name || 'Vijay';
+    const name = req.body.name;
     const vehicleRegistrationNo = req.body.registration_no;
     // TODO: handle for reserved
 
     try {
-      const parkingSpace = await userService.parkVehicle({ name, vehicleRegistrationNo });
+      const parkingSpace = await userService.parkVehicle({
+        name,
+        vehicleRegistrationNo,
+      });
 
       const response = {
         spot_no: parkingSpace.spot_no,
@@ -70,12 +77,11 @@ class UsersController {
       };
       res.status(400).json(response);
     }
-
   }
 
   // Unpark API
   static async unpark(req, res, next) {
-    logger.info(req.body, 'Unpark Request')
+    logger.info(req.body, 'Unpark Request');
 
     const vehicleRegistrationNo = req.body.registration_no;
 
@@ -94,7 +100,6 @@ class UsersController {
       };
       res.status(500).json(response);
     }
-
   }
 }
 

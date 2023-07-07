@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 'use strict';
-
+const cors = require('cors');
 const express = require('express');
 const logger = require('pino')();
 
 const config = require('./config');
-const { HealthCheckController, ParkingLotsController, 
-        ParkingSpacesController, UsersController } = require('./controllers');
+const {
+  HealthCheckController,
+  ParkingLotsController,
+  ParkingSpacesController,
+  UsersController,
+} = require('./controllers');
 
 require('./db');
 
@@ -15,6 +19,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Optional Cors
+config['URL_APP']
+  ? app.use(
+      cors({
+        origin: config['URL_APP'],
+        optionsSuccessStatus: 200,
+      })
+    )
+  : app.use(cors());
 
 // Root Route
 app.get('/', (req, res) => {
@@ -23,13 +36,19 @@ app.get('/', (req, res) => {
   });
 });
 
-app.get(`${config['BASE_PATH']}/healthz`, HealthCheckController.healthCheck);
+app.get('/api/v1', HealthCheckController.healthCheck);
 
-// Route for Initialize Parking Log
-app.post(`${config['BASE_PATH']}/parking_lots/init`, ParkingLotsController.initParkingLot);
+// Route for Initialize Parking Lot
+app.post(
+  `${config['BASE_PATH']}/parking_lots/init`,
+  ParkingLotsController.initParkingLot
+);
 
 // Generic Search API for getting all parking spaces and occupied parking spaces
-app.get(`${config['BASE_PATH']}/parking_spaces`, ParkingSpacesController.search);
+app.get(
+  `${config['BASE_PATH']}/parking_spaces`,
+  ParkingSpacesController.search
+);
 
 // Generic Search API for getting registred users
 app.get(`${config['BASE_PATH']}/users`, UsersController.search);
@@ -39,7 +58,6 @@ app.post(`${config['BASE_PATH']}/users/book`, UsersController.book);
 app.post(`${config['BASE_PATH']}/users/park`, UsersController.park);
 app.post(`${config['BASE_PATH']}/users/unpark`, UsersController.unpark);
 
-
 // Handle 404 Routes
 app.get('*', (req, res) => {
   res.status(404).json({
@@ -48,12 +66,12 @@ app.get('*', (req, res) => {
 });
 
 // Error Handler
-app.use(function(error, req, res, next) {
+app.use(function (error, req, res, next) {
   logger.error(error.stack, error.message);
 
   const response = {
     success: false,
-    errors: error.stack
+    errors: error.stack,
   };
   res.status(500).json(response);
 });
@@ -69,5 +87,5 @@ process.on('SIGINT', function () {
 });
 
 module.exports = {
-  app
+  app,
 };
